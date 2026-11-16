@@ -5,6 +5,7 @@ struct LearningSnapshot: Codable {
     var logs: [DayLog]
     var runStart: Date
     var lastActivity: Date?
+    var goalFailed: Bool? 
 }
 
 protocol StorageServiceProtocol {

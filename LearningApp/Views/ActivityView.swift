@@ -25,9 +25,6 @@ struct ActivityView: View {
             Spacer(minLength: 0)
             content.frame(maxWidth: .infinity)
             Spacer(minLength: 0)
-            Spacer(minLength: 0)
-            content.frame(maxWidth: .infinity)
-            Spacer(minLength: 0)
 
             #if DEBUG
             debugBar

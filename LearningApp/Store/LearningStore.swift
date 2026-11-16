@@ -1,6 +1,6 @@
 import Foundation
-
 import Combine
+
 enum GoalState {
     case active
     case completed
@@ -13,14 +13,16 @@ final class LearningStore: ObservableObject {
     @Published private(set) var logs: [DayLog] = []
     @Published private(set) var runStart: Date = Date()
     @Published private(set) var lastActivity: Date? = nil
+    @Published private(set) var isGoalFailed: Bool = false
     @Published private(set) var now: Date = Date()
 
     private let storage: StorageServiceProtocol
     private let calendar: Calendar = Calendar.app
     private let streakTimeout: TimeInterval = 32 * 60 * 60   // 32 hours
 
-    //private var timeOffset: TimeInterval = 0
-    //private var currentDate: Date { Date().addingTimeInterval(timeOffset) }
+    // Used only by the debug buttons to fake time passing.
+    private var timeOffset: TimeInterval = 0
+    private var currentDate: Date { Date().addingTimeInterval(timeOffset) }
 
     init(storage: StorageServiceProtocol = StorageService()) {
         self.storage = storage
@@ -29,6 +31,7 @@ final class LearningStore: ObservableObject {
             self.logs = saved.logs
             self.runStart = saved.runStart
             self.lastActivity = saved.lastActivity
+            self.isGoalFailed = saved.goalFailed ?? false
         }
         refresh()
     }
@@ -52,35 +55,58 @@ final class LearningStore: ObservableObject {
     var frozenCount: Int { runLogs.filter { $0.status == .frozen }.count }
     var maxFreezes: Int { goal?.duration.maxFreezes ?? 0 }
 
-    /// Log button is disabled once today is logged as learned.
-    var canLog: Bool { todayStatus != .learned }
-
-    /// Freeze button is disabled if a day is logged/frozen or all freezes are used.
-    /// It becomes available again at 12AM because "today" changes.
-    var canFreeze: Bool { todayStatus == nil && frozenCount < maxFreezes }
+    /// Learned + Frozen days both count toward the goal.
+    var progressDays: Int { learnedCount + frozenCount }
 
     var goalState: GoalState {
-        guard let goal = goal,
-              let end = calendar.date(byAdding: .day, value: goal.duration.days, to: goal.startDate),
-              now >= end else { return .active }
-        return learnedCount >= goal.duration.days ? .completed : .failed
+        guard let goal = goal else { return .active }
+
+        // 1) Reached the goal (frozen days count too).
+        if progressDays >= goal.duration.days { return .completed }
+
+        // 2) Missed a day without a freeze (32h passed).
+        if isGoalFailed { return .failed }
+
+        // 3) The goal period ended without reaching it.
+        if let end = calendar.date(byAdding: .day, value: goal.duration.days, to: goal.startDate),
+           now >= end {
+            return .failed
+        }
+        return .active
+    }
+
+    /// Circle button: enabled only while the goal is active and today has no log yet.
+    /// (After Freeze or Log it becomes gray. It is enabled again at 12AM.)
+    var canLog: Bool {
+        goalState == .active && todayStatus == nil
+    }
+
+    /// Freeze button: disabled if today is logged/frozen, or all freezes are used.
+    var canFreeze: Bool {
+        goalState == .active && todayStatus == nil && frozenCount < maxFreezes
     }
 
     // MARK: Actions
 
     func logToday() {
+        refresh()
+        guard canLog else { return }
         record(.learned)
     }
 
     func freezeToday() {
         refresh()
-        if canFreeze { record(.frozen) }
+        guard canFreeze else { return }
+        record(.frozen)
     }
 
     func startGoal(subject: String, duration: GoalDuration) {
-        now = Data()
+        now = currentDate
         goal = LearningGoal(subject: subject, duration: duration, startDate: today)
-        resetStreak()
+        runStart = today
+        lastActivity = now
+        isGoalFailed = false
+        persist()
     }
 
     /// Updating the goal restarts the streak.
@@ -90,32 +116,19 @@ final class LearningStore: ObservableObject {
 
     /// Call on launch, when the app becomes active, and when the day changes.
     func refresh() {
-        now = Date()
-        if let last = lastActivity, now.timeIntervalSince(last) > streakTimeout {
-            resetStreak()
-        }
-    }
-//#if DEBUG
-//func debugAdvance(hours: Double) {
-//    timeOffset += hours * 3600
-//    refresh()
-//}
+        now = currentDate
+        guard goalState == .active,
+              let last = lastActivity,
+              now.timeIntervalSince(last) > streakTimeout else { return }
 
-//func debugReset() {
-//    timeOffset = 0
-//    goal = nil
-//    logs = []
-//    lastActivity = nil
-//    now = Date()
-//    runStart = today
-//    persist()
-//}
-//#endif
-    
+        // More than 32 hours without Learned or Freeze: goal failed.
+        isGoalFailed = true
+        persist()
+    }
+
     // MARK: Private
 
     private func record(_ status: DayStatus) {
-        refresh()
         let day = today
         logs.removeAll(where: { $0.date == day })
         logs.append(DayLog(date: day, status: status))
@@ -123,13 +136,31 @@ final class LearningStore: ObservableObject {
         persist()
     }
 
-    private func resetStreak() {
-        runStart = today
-        lastActivity = now
-        persist()
+    private func persist() {
+        storage.save(LearningSnapshot(goal: goal,
+                                      logs: logs,
+                                      runStart: runStart,
+                                      lastActivity: lastActivity,
+                                      goalFailed: isGoalFailed))
     }
 
-    private func persist() {
-        storage.save(LearningSnapshot(goal: goal, logs: logs, runStart: runStart, lastActivity: lastActivity))
+    // MARK: Debug (testing only)
+
+    #if DEBUG
+    func debugAdvance(hours: Double) {
+        timeOffset += hours * 3600
+        refresh()
     }
+
+    func debugReset() {
+        timeOffset = 0
+        goal = nil
+        logs = []
+        lastActivity = nil
+        isGoalFailed = false
+        now = Date()
+        runStart = today
+        persist()
+    }
+    #endif
 }
