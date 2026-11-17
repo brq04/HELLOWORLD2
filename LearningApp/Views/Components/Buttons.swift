@@ -1,22 +1,21 @@
 import SwiftUI
 
-/// Round dark icon (nav bar and header buttons). Use as a label.
+/// Round glass icon (header buttons). Use as a label.
 struct CircleIcon: View {
     let systemName: String
     var tint: Color = .white
-    var background: Color = Color(white: 0.14)
+    var background: Color? = nil      // glass tint
 
     var body: some View {
         Image(systemName: systemName)
             .font(.system(size: 17, weight: .semibold))
             .foregroundStyle(tint)
             .frame(width: 44, height: 44)
-            .background(Circle().fill(background))
-            .overlay(Circle().stroke(Color.white.opacity(0.08), lineWidth: 1))
+            .glassBackground(Circle(), tint: background, interactive: true)
     }
 }
 
-/// Orange capsule (Start Learning, Set a goal). Use as a label.
+/// Orange glass capsule (Start Learning, Set a goal). Use as a label.
 struct CapsuleLabel: View {
     let title: String
     var systemImage: String? = nil
@@ -32,13 +31,7 @@ struct CapsuleLabel: View {
         .foregroundStyle(Color.white)
         .padding(.horizontal, 28)
         .padding(.vertical, 14)
-        .background(
-            Capsule().fill(
-                LinearGradient(colors: [Theme.orangeLight, Theme.orange],
-                               startPoint: .top, endPoint: .bottom)
-            )
-        )
-        .overlay(Capsule().stroke(Color.white.opacity(0.25), lineWidth: 1))
+        .glassBackground(Capsule(), tint: Theme.orange, interactive: true)
     }
 }
 
@@ -54,7 +47,10 @@ struct BigCircleButton: View {
                 .font(.system(size: 18, weight: .semibold))
                 .foregroundStyle(isEnabled ? Color.white : Theme.disabledText)
                 .frame(width: 272, height: 272)
-                .background(Circle().fill(isEnabled ? Theme.orange : Theme.disabled))
+                .background(Circle().fill(isEnabled ? Color.clear : Theme.disabled))
+                .glassBackground(Circle(),
+                                 tint: isEnabled ? Theme.orange : nil,
+                                 interactive: isEnabled)
         }
         .buttonStyle(.plain)
         .disabled(!isEnabled)
@@ -73,7 +69,10 @@ struct FreezeButton: View {
                 .font(.system(size: 17, weight: .medium))
                 .foregroundStyle(isEnabled ? Color.white : Theme.disabledText)
                 .frame(width: 272, height: 46)
-                .background(Capsule().fill(isEnabled ? Theme.blue : Theme.disabled))
+                .background(Capsule().fill(isEnabled ? Color.clear : Theme.disabled))
+                .glassBackground(Capsule(),
+                                 tint: isEnabled ? Theme.blue : nil,
+                                 interactive: isEnabled)
         }
         .buttonStyle(.plain)
         .disabled(!isEnabled)

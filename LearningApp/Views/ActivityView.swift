@@ -73,7 +73,7 @@ private func debugButton(_ title: String, action: @escaping () -> Void) -> some 
             NavigationLink {
                 GoalEditView(store: store)
             } label: {
-                CircleIcon(systemName: "pencil.circle")
+                CircleIcon(systemName: "pencil.and.outline")
             }
         }
         .padding(.top, 8)
@@ -118,7 +118,7 @@ private func debugButton(_ title: String, action: @escaping () -> Void) -> some 
             NavigationLink {
                 GoalEditView(store: store)
             } label: {
-                CapsuleLabel(title: Strings.setAGoal, systemImage: "pencil.circle")
+                CapsuleLabel(title: Strings.setAGoal, systemImage: "pencil.and.outline")
             }
             .buttonStyle(.plain)
             .padding(.top, 48)

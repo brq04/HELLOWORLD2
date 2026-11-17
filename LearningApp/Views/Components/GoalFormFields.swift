@@ -20,25 +20,14 @@ struct DurationChips: View {
                 .font(.system(size: 17))
                 .foregroundStyle(isSelected ? Color.white : Theme.disabledText)
                 .frame(width: 84, height: 44)
-                .background(chipBackground(isSelected: isSelected))
-                .overlay(
-                    Capsule().stroke(Color.white.opacity(isSelected ? 0.35 : 0.08), lineWidth: 1)
-                )
+                .glassBackground(Capsule(),
+                                 tint: isSelected ? Theme.orange : nil,
+                                 interactive: true)
         }
         .buttonStyle(.plain)
     }
 
-    @ViewBuilder
-    private func chipBackground(isSelected: Bool) -> some View {
-        if isSelected {
-            Capsule().fill(
-                LinearGradient(colors: [Theme.orangeLight, Theme.orange],
-                               startPoint: .top, endPoint: .bottom)
-            )
-        } else {
-            Capsule().fill(Color.white.opacity(0.08))
-        }
-    }
+  
 }
 
 /// Used by both the Onboarding and Learning Goal screens.
