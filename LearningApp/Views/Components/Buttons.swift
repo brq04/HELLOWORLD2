@@ -46,7 +46,8 @@ struct BigCircleButton: View {
             Text(title)
                 .font(.system(size: 18, weight: .semibold))
                 .foregroundStyle(isEnabled ? Color.white : Theme.disabledText)
-                .frame(width: 272, height: 272)
+                .frame(maxWidth: 272, maxHeight: 272)
+                .aspectRatio(1, contentMode: .fit)
                 .background(Circle().fill(isEnabled ? Color.clear : Theme.disabled))
                 .glassBackground(Circle(),
                                  tint: isEnabled ? Theme.orange : nil,

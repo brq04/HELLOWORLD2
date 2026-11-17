@@ -19,8 +19,6 @@ struct StatCard: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 20)
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 20)
-        .glassBackground(RoundedRectangle(cornerRadius: 26, style: .continuous))
-    }
+        .fixedSize(horizontal: false, vertical: true)
+        .glassBackground(RoundedRectangle(cornerRadius: 26, style: .continuous))    }
 }
