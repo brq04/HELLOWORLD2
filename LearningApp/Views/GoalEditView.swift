@@ -40,7 +40,7 @@ struct GoalEditView: View {
                 Button {
                     dismiss()
                 } label: {
-                    CircleIcon(systemName: "chevron.left")
+                    ToolbarIcon(systemName: "chevron.left")
                 }
                 .disabled(vm.showUpdateAlert)
             }
@@ -48,8 +48,7 @@ struct GoalEditView: View {
                 Button {
                     vm.checkmarkTapped()
                 } label: {
-                    CircleIcon(systemName: "checkmark", background: Theme.orange)
-                }
+                    ToolbarIcon(systemName: "checkmark", accent: Theme.orange)                }
                 .disabled(!vm.canSave || vm.showUpdateAlert)
                 .opacity(vm.canSave ? 1 : 0.4)
             }

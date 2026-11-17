@@ -26,34 +26,34 @@ struct ActivityView: View {
             content.frame(maxWidth: .infinity)
             Spacer(minLength: 0)
 
-            #if DEBUG
-            debugBar
-            #endif
+//            #if DEBUG
+//            debugBar
+//            #endif
         }
         .foregroundStyle(Color.white)
         .padding(.horizontal, 16)
         .background(Color.black.ignoresSafeArea())
         .toolbar(.hidden, for: .navigationBar)
     }
-#if DEBUG
-private var debugBar: some View {
-    HStack(spacing: 8) {
-        debugButton("+1 Day") { vm.debugAdvance(hours: 24) }
-        debugButton("+33 Hours") { vm.debugAdvance(hours: 33) }
-        debugButton("Reset") { vm.debugReset() }
-    }
-    .padding(.bottom, 8)
-}
-
-private func debugButton(_ title: String, action: @escaping () -> Void) -> some View {
-    Button(title, action: action)
-        .font(.system(size: 13, weight: .medium))
-        .foregroundStyle(Color.white)
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
-        .background(Capsule().fill(Color.red.opacity(0.7)))
-}
-#endif
+//#if DEBUG
+//private var debugBar: some View {
+//    HStack(spacing: 8) {
+//        debugButton("+1 Day") { vm.debugAdvance(hours: 24) }
+//        debugButton("+33 Hours") { vm.debugAdvance(hours: 33) }
+//        debugButton("Reset") { vm.debugReset() }
+//    }
+//    .padding(.bottom, 8)
+//}
+//
+//private func debugButton(_ title: String, action: @escaping () -> Void) -> some View {
+//    Button(title, action: action)
+//        .font(.system(size: 13, weight: .medium))
+//        .foregroundStyle(Color.white)
+//        .padding(.horizontal, 12)
+//        .padding(.vertical, 8)
+//        .background(Capsule().fill(Color.red.opacity(0.7)))
+//}
+//#endif
     
     private var header: some View {
         HStack(alignment: .top) {

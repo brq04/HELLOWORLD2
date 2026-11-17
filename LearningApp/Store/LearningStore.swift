@@ -145,22 +145,22 @@ final class LearningStore: ObservableObject {
     }
 
     // MARK: Debug (testing only)
-
-    #if DEBUG
-    func debugAdvance(hours: Double) {
-        timeOffset += hours * 3600
-        refresh()
-    }
-
-    func debugReset() {
-        timeOffset = 0
-        goal = nil
-        logs = []
-        lastActivity = nil
-        isGoalFailed = false
-        now = Date()
-        runStart = today
-        persist()
-    }
-    #endif
+//
+//    #if DEBUG
+//    func debugAdvance(hours: Double) {
+//        timeOffset += hours * 3600
+//        refresh()
+//    }
+//
+//    func debugReset() {
+//        timeOffset = 0
+//        goal = nil
+//        logs = []
+//        lastActivity = nil
+//        isGoalFailed = false
+//        now = Date()
+//        runStart = today
+//        persist()
+//    }
+//    #endif
 }

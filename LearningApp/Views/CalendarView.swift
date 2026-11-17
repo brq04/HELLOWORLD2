@@ -29,7 +29,7 @@ struct CalendarView: View {
                 Button {
                     dismiss()
                 } label: {
-                    CircleIcon(systemName: "chevron.left")
+                    ToolbarIcon(systemName: "chevron.left")
                 }
             }
         }

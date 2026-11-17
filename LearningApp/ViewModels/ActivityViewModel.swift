@@ -54,8 +54,8 @@ final class ActivityViewModel: ObservableObject {
 
     func logTapped() { store.logToday() }
     func freezeTapped() { store.freezeToday() }
-#if DEBUG
-func debugAdvance(hours: Double) { store.debugAdvance(hours: hours) }
-func debugReset() { store.debugReset() }
-#endif
+//#if DEBUG
+//func debugAdvance(hours: Double) { store.debugAdvance(hours: hours) }
+//func debugReset() { store.debugReset() }
+//#endif
 }
